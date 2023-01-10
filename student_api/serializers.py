@@ -29,8 +29,10 @@ class StudentSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Student
+        # fields = "__all__"
         fields = ["id", "first_name", "last_name",
                   "number", "age", "born_year", "path", "path_id"]
+        # exclude = ["number"]
 
     def get_born_year(self, obj):
         import datetime

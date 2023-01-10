@@ -69,7 +69,7 @@ def student_delete(request, pk):
     student = get_object_or_404(Student, id=pk)
     student.delete()
     message = {
-        "message": 'Student deleted succesfully....'
+        "message": f'Student deleted succesfully....'
     }
     return Response(message)
 

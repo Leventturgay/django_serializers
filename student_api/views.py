@@ -6,7 +6,10 @@ from .serializers import StudentSerializer, PathSerializer
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
+from rest_framework.views import APIView
 
+
+########################## FUNCTION BASED VİEWS###################################
 
 @api_view()  # default GET
 def home(requst):
@@ -123,3 +126,51 @@ def student_api_get_update_delete(request, pk):
             "message": f"Student {student.last_name} deleted successfully"
         }
         return Response(data)
+
+
+######################### CLASS BASED VİEWS #####################################
+
+class StudentListCreate(APIView):
+    def get(self, request):
+        students = Student.objects.all()
+        serializer = StudentSerializer(students, many=True)
+        return Response(serializer.data)
+
+    def post(self, request):
+        serializer = StudentSerializer(data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            data = {
+                "message": f'Student {serializer.validated_data.get("first_name")} saved succesfully....'
+            }
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+class StudentDetail(APIView):
+    def get_obj(self, pk):
+        return get_object_or_404(Student, pk=pk)
+
+    def get(self, request, pk):
+        student = self.get_obj(pk)
+        serializer = StudentSerializer(student)
+        return Response(serializer.data)
+
+    def put(self, request, pk):
+        student = self.get_obj(pk)
+        serializer = StudentSerializer(instance=student, data=request.data)
+        if serializer.is_valid():
+            serializer.save()
+            message = {
+                "message": f'Student updated succesfully....'
+            }
+            return Response(serializer.data)
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+    def delete(self, request, pk):
+        student = self.get_obj(pk)
+        student.delete()
+        message = {
+            "message": f'Student deleted succesfully....'
+        }
+        return Response(message)

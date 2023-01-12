@@ -3,14 +3,15 @@ from django.shortcuts import render, HttpResponse, get_object_or_404
 from .models import Student, Path
 
 from .serializers import StudentSerializer, PathSerializer
-from rest_framework.decorators import api_view
+from rest_framework.decorators import api_view, action
 from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.views import APIView
 from rest_framework.generics import GenericAPIView, mixins, ListCreateAPIView, RetrieveUpdateDestroyAPIView
-
+from rest_framework.viewsets import ModelViewSet
 
 ########################## FUNCTION BASED VİEWS###################################
+
 
 @api_view()  # default GET
 def home(requst):
@@ -213,3 +214,27 @@ class StudentCV(ListCreateAPIView):
 class StudentDetailCV(RetrieveUpdateDestroyAPIView):
     queryset = Student.objects.all()
     serializer_class = StudentSerializer
+
+
+#! ViewSets
+class StudentMVS(ModelViewSet):
+    queryset = Student.objects.all()
+    serializer_class = StudentSerializer
+
+    @action(detail=False, methods=["GET"])
+    def student_count(self, request):
+        count = {
+            "student_count": self.queryset.count()
+        }
+        return Response(count)
+
+
+class PathMVS(ModelViewSet):
+    queryset = Path.objects.all()
+    serializer_class = PathSerializer
+
+    @action(detail=True)
+    def student_names(self, request, pk=None):
+        path = self.get_object()
+        students = path.students.all()
+        return Response([i.first_name for i in students])

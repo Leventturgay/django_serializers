@@ -1,5 +1,6 @@
 
-from django.urls import path
+from django.urls import path, include
+from rest_framework import routers
 from .views import (
     #! function views
     home,
@@ -12,9 +13,19 @@ from .views import (
     # student_api_get_update_delete
 
     #! class views
-    StudentListCreate,
-    StudentDetail
+    # StudentListCreate,
+    # StudentDetail
+    # StudentGAV,
+    # StudentDetailGAV
+    # StudentCV,
+    # StudentDetail
+    StudentMVS,
+    PathMVS
 )
+
+router = routers.DefaultRouter()
+router.register("student", StudentMVS)
+router.register("path", PathMVS)
 
 urlpatterns = [
     #! function views
@@ -27,8 +38,13 @@ urlpatterns = [
     # path('student/<int:pk>', student_api_get_update_delete)
 
     #! class views
-    path("student/", StudentListCreate.as_view()),
-    path("student/<int:pk>", StudentDetail.as_view()),
+    # path("student/", StudentCV.as_view()),
+    # path("student/<int:pk>", StudentDetail.as_view()),
+    # path("student/", StudentGAV.as_view()),
+    # path("student/<int:pk>", StudentDetailGAV.as_view()),
+    # path("student/", StudentListCreate.as_view()),
+    # path("student/<int:pk>", StudentDetail.as_view()),
+    path("", include(router.urls))
 
 
 
